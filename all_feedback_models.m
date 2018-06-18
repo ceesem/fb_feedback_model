@@ -29,8 +29,8 @@ tonic_activation = [0 0 0 0 2 2 4]';
 
 % Run simulations across different KC->MBON weights, activating olfaction
 
-Jkcs = 0:0.01:1;
-stim = [10, 0, 0, 0, 0, 0, 0]';
+Jkcs = 0:0.01:1;                    % Vector of KC->MBON weights to run.
+stim = [10, 0, 0, 0, 0, 0, 0]';     % Stimulation vector. Only stimulate the PNs here.
 
 mbon_max = zeros(size(Jkcs));
 fb_max = zeros(size(Jkcs));
@@ -39,6 +39,8 @@ mbin_max = zeros(size(Jkcs));
 
 mbin_dyn = cell(length(Jkcs),2);
 all_dat = cell(length(Jkcs),1);
+
+% For every KC->MBON connection weight, run the ode in logistic_integration_general and record key information.
 for jj = 1:length(Jkcs)
     Jkcmbon  = Jkcs(jj);
     
@@ -57,7 +59,7 @@ for jj = 1:length(Jkcs)
     fb2_max(jj) = max(r_out(:,6));
     mbin_max(jj) = max(r_out(:,7));
  
-    tss = and( t_out > 850, t_out<900 ); % Steady state sampling window
+    tss = and( t_out > 850, t_out<900 ); % Look only within a time window after the dynamics have reached equilbrium.
     mbon_ss(jj) = max(r_out(tss,3));
     fb_ss(jj) = max(r_out(tss,5));
     fb2_ss(jj) = max(r_out(tss,6));
@@ -72,7 +74,7 @@ end
 cmap_qual = cbrewer('qual','Dark2',4);
 clr1d = 0.9*cbrewer('div','RdBu',length(Jkcs));
 
-% Same thing with steady state values
+% Plot the steady state responses as a function of KC->MBON connection weight.
 figure('Color','w'); hold on;
 plot(Jkcs,mbon_ss / max(mbon_ss),'Color',cmap_qual(1,:),'LineWidth',2)
 plot(Jkcs,fb_ss / max(fb_ss),'Color',cmap_qual(2,:),'LineWidth',2)
@@ -101,11 +103,13 @@ axis square
 set(gca,'XLim',[400 1200],'TickDir','out','YLim',[0 5.5]);
 export_fig('examples_with_fb2_june5.pdf')
 
-%% Rerun simulation assuming lower/higher baseline FBN states
+%% Rerun simulation assuming lower/higher baseline FBN states (given by the value of the tonic input into the FBN)
 
 tonic_activation_low = [0 0 0 0 2 2 4]';
 tonic_activation_high = [0 0 0 0 4 2 4]';
 Jkcs = 0.9;
+
+% In these conditions, we stimulate the MBON instead of the PNs, since this is like the ChR experiments.
 
 stim_mbon = [0, 0, 10, 0, 0, 0, 0]';
 p_baseline = p;
@@ -127,8 +131,9 @@ set(gca,'XLim',[400 1200],'TickDir','out','YLim',[0 4]);
 legend({'Low FBN Baseline', 'High FBN Baseline'});
 export_fig('baseline_comparison.pdf')
 
-%% Re-do the above at the high baseline values.
 
+
+%% Re-do the whole initial set of runs at the high baseline values.
 
 Jpnkc    = 1;
 JkcmbonL = 1;
@@ -186,7 +191,7 @@ end
 cmap_qual = cbrewer('qual','Dark2',4);
 clr1d = 0.9*cbrewer('div','RdBu',length(Jkcs));
 
-% Same thing with steady state values
+% Plot the steady state results as before.
 figure('Color','w'); hold on;
 plot(Jkcs,mbon_ss / max(mbon_ss),'Color',cmap_qual(1,:),'LineWidth',2)
 plot(Jkcs,fb_ss / max(fb_ss),'Color',cmap_qual(2,:),'LineWidth',2)
