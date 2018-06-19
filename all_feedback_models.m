@@ -203,3 +203,16 @@ plot([0.9],mbin_ss(0.9==Jkcs) / max(mbin_ss),'Marker','o','MarkerSize',10,'LineW
 set(gca,'XDir','Reverse','TickDir','out','YTick',[0, 0.5, 1], 'YLim',[0 1] )
 axis square
 export_fig('high_baseline_ss_values_june5.pdf')
+
+%%
+figure('Color','w'); hold on;
+for ii = 1:length(Jkcs)
+    if or( round(Jkcs(ii)*100) == 10, or( round(Jkcs(ii)*100) == 64 , round( Jkcs(ii)*100 ) == 90 ) )
+%        plot(mbin_dyn{ii,1},mbin_dyn{ii,2} / max(max(mbin_max)),'Color',clr1d(ii,:),'LineWidth',2 )
+        plot(mbin_dyn{ii,1},mbin_dyn{ii,2},'Color',clr1d(ii,:),'LineWidth',2 )
+    end
+end
+axis square
+set(gca,'XLim',[400 1200],'TickDir','out','YLim',[0 5.5]);
+export_fig('high_baseline_examples_june5.pdf')
+
